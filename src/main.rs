@@ -5,12 +5,16 @@ pub mod input_gamepad;
 pub mod player;
 pub mod systems;
 
+const WINDOW_TITLE: &str = "contro";
+pub const WINDOW_WIDTH: f32 = 1920.0;
+pub const WINDOW_HEIGHT: f32 = 1080.0;
+
 fn main() {
     let mut app = App::new();
     app.add_plugins(DefaultPlugins.set(WindowPlugin {
         primary_window: Some(Window {
-            title: "contro".into(),
-            resolution: WindowResolution::new(1920., 1080.),
+            title: WINDOW_TITLE.into(),
+            resolution: WindowResolution::new(WINDOW_WIDTH, WINDOW_HEIGHT),
             position: WindowPosition::Centered(MonitorSelection::Primary),
             ..default()
         }),
