@@ -15,7 +15,7 @@ pub fn gamepad_system(gamepads: Query<(Entity, &Gamepad)>) {
 
         let left_stick_x = gamepad.get(GamepadAxis::LeftStickX).unwrap();
         let left_stick_y = gamepad.get(GamepadAxis::LeftStickY).unwrap();
-        if left_stick_x.abs() > 0.01 || left_stick_y.abs() > 0.01 {
+        if left_stick_x.abs() > 0.1 || left_stick_y.abs() > 0.1 {
             info!(
                 "{} LeftStick position: ({}, {})",
                 entity, left_stick_x, left_stick_y
