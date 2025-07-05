@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy::window::WindowResolution;
+use bevy::window::{EnabledButtons, WindowResolution, WindowTheme};
 
 pub mod input_gamepad;
 pub mod player;
@@ -14,8 +14,16 @@ fn main() {
     app.add_plugins(DefaultPlugins.set(WindowPlugin {
         primary_window: Some(Window {
             title: WINDOW_TITLE.into(),
+            name: Some(WINDOW_TITLE.into()),
             resolution: WindowResolution::new(WINDOW_WIDTH, WINDOW_HEIGHT),
             position: WindowPosition::Centered(MonitorSelection::Primary),
+            resizable: false,
+            enabled_buttons: EnabledButtons {
+                close: true,
+                maximize: false,
+                minimize: false,
+            },
+            window_theme: Some(WindowTheme::Dark),
             ..default()
         }),
         ..default()
