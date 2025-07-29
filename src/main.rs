@@ -6,6 +6,7 @@ use bevy::{
 };
 
 pub mod input_gamepad;
+pub mod input_keyboard;
 pub mod player;
 pub mod systems;
 
@@ -53,6 +54,7 @@ fn main() {
         (
             systems::kill_game_on_esc,
             input_gamepad::gamepad_system,
+            input_keyboard::keyboard_system,
             player::player_movement_system,
         ),
     );
