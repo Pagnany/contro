@@ -21,4 +21,8 @@ pub fn keyboard_system(
     if keyboard_input.pressed(KeyCode::KeyS) {
         player.velocity.y -= KEYBOARD_ACC * player.move_acceleration * time.delta_secs();
     }
+    if keyboard_input.just_pressed(KeyCode::Space) {
+        player.velocity.x += player.dash_power * player.angle.cos();
+        player.velocity.y += player.dash_power * player.angle.sin();
+    }
 }

@@ -9,11 +9,13 @@ pub mod input_keyboard;
 pub mod player;
 pub mod systems;
 
-const UPDATE_INTERVAL: f64 = 1.0 / 60.0;
+pub const PI: f32 = std::f32::consts::PI;
+
 const WINDOW_TITLE: &str = "contro";
 pub const WINDOW_WIDTH: f32 = 1920.0;
 pub const WINDOW_HEIGHT: f32 = 1080.0;
-pub const PI: f32 = std::f32::consts::PI;
+
+const UPDATE_INTERVAL: f64 = 1.0 / 60.0;
 
 fn main() {
     let mut app = App::new();
