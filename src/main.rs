@@ -1,7 +1,6 @@
 use bevy::{
     dev_tools::fps_overlay::{FpsOverlayConfig, FpsOverlayPlugin},
     prelude::*,
-    text::FontSmoothing,
     window::{EnabledButtons, WindowResolution, WindowTheme},
 };
 
@@ -10,9 +9,11 @@ pub mod input_keyboard;
 pub mod player;
 pub mod systems;
 
+const UPDATE_INTERVAL: f64 = 1.0 / 60.0;
 const WINDOW_TITLE: &str = "contro";
 pub const WINDOW_WIDTH: f32 = 1920.0;
 pub const WINDOW_HEIGHT: f32 = 1080.0;
+pub const PI: f32 = std::f32::consts::PI;
 
 fn main() {
     let mut app = App::new();
@@ -37,9 +38,7 @@ fn main() {
         FpsOverlayPlugin {
             config: FpsOverlayConfig {
                 text_config: TextFont {
-                    font_size: 24.0,
-                    font: default(),
-                    font_smoothing: FontSmoothing::default(),
+                    font_size: 15.0,
                     ..default()
                 },
                 text_color: Color::srgb(0.0, 1.0, 0.0),
@@ -48,6 +47,7 @@ fn main() {
             },
         },
     ));
+    app.insert_resource(Time::<Fixed>::from_seconds(UPDATE_INTERVAL));
     app.add_systems(Startup, setup);
     app.add_systems(
         Update,
@@ -58,6 +58,7 @@ fn main() {
             player::player_movement_system,
         ),
     );
+    // app.add_systems(FixedUpdate, player::player_movement_system);
     app.run();
 }
 
@@ -69,11 +70,6 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn((
         Sprite::from_image(player_texture),
         Transform::from_xyz(100.0, 0.0, 0.0),
-        player::Player {
-            friction: 15.0,
-            move_acceleration: 15000.0,
-            dash_power: 5000.0,
-            ..default()
-        },
+        player::Player::default(),
     ));
 }
