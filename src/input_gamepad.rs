@@ -14,11 +14,16 @@ pub fn gamepad_system(
         // } else if gamepad.just_released(GamepadButton::South) {
         //     info!("{} just released South", entity);
         // }
-        //
-        // let right_trigger = gamepad.get(GamepadButton::RightTrigger2).unwrap();
-        // if right_trigger.abs() > 0.01 {
-        //     info!("{} RightTrigger2 value is {}", entity, right_trigger);
-        // }
+
+        // From -1.0 to 1.0
+        let right_trigger = gamepad.get(GamepadAxis::RightZ).unwrap() + 1.0;
+        if !player.right_trigger_down && right_trigger > 0.4 {
+            player.right_trigger_down = true;
+            player.velocity.x += player.dash_power * player.angle.cos();
+            player.velocity.y += player.dash_power * player.angle.sin();
+        } else if player.right_trigger_down && right_trigger < 0.4 {
+            player.right_trigger_down = false;
+        }
 
         let left_stick_x = gamepad.get(GamepadAxis::LeftStickX).unwrap();
         let left_stick_y = gamepad.get(GamepadAxis::LeftStickY).unwrap();
