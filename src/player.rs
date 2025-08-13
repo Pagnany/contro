@@ -1,5 +1,7 @@
 use bevy::prelude::*;
 
+use crate::MySquare;
+
 #[derive(Component)]
 pub struct Player {
     pub position: Vec2,
@@ -44,4 +46,22 @@ pub fn player_movement_system(time: Res<Time>, mut query: Query<(&mut Player, &m
 
     player.velocity.x -= player.velocity.x * player.friction * time.delta_secs();
     player.velocity.y -= player.velocity.y * player.friction * time.delta_secs();
+}
+
+pub fn player_mysquare_collision_system(
+    mut commands: Commands,
+    player_query: Query<&Transform, With<Player>>,
+    square_query: Query<(Entity, &MySquare, &Transform)>,
+) {
+    let p_transform = player_query.single().unwrap();
+    for (square_entity, square, square_transform) in square_query.iter() {
+        if p_transform.translation.x < square_transform.translation.x + square.size.x / 2.0
+            && p_transform.translation.x > square_transform.translation.x - square.size.x / 2.0
+            && p_transform.translation.y < square_transform.translation.y + square.size.y / 2.0
+            && p_transform.translation.y > square_transform.translation.y - square.size.y / 2.0
+        {
+            info!("Player collided with square: {:?}", square_entity);
+            commands.entity(square_entity).despawn();
+        }
+    }
 }

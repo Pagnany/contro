@@ -61,12 +61,12 @@ fn main() {
             player::player_movement_system,
         ),
     );
-    // app.add_systems(FixedUpdate, player::player_movement_system);
+    app.add_systems(FixedUpdate, player::player_mysquare_collision_system);
     app.run();
 }
 
 #[derive(Component)]
-struct MySquare {
+pub struct MySquare {
     position: Vec2,
     size: Vec2,
     color: Color,
@@ -92,6 +92,7 @@ fn spawn_random_squares(mut commands: Commands) {
         ));
     }
 }
+
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     let player_texture = asset_server.load("textures/player01.png");
 
