@@ -3,6 +3,7 @@ use bevy::{
     prelude::*,
     window::{EnabledButtons, WindowResolution, WindowTheme},
 };
+use rand::Rng;
 
 pub mod input_gamepad;
 pub mod input_keyboard;
@@ -50,7 +51,7 @@ fn main() {
         },
     ));
     app.insert_resource(Time::<Fixed>::from_seconds(UPDATE_INTERVAL));
-    app.add_systems(Startup, setup);
+    app.add_systems(Startup, (setup, spawn_random_squares));
     app.add_systems(
         Update,
         (
@@ -64,6 +65,33 @@ fn main() {
     app.run();
 }
 
+#[derive(Component)]
+struct MySquare {
+    position: Vec2,
+    size: Vec2,
+    color: Color,
+}
+
+fn spawn_random_squares(mut commands: Commands) {
+    let mut rng = rand::rngs::ThreadRng::default();
+    for _ in 0..20 {
+        let x = rng.random_range(-WINDOW_WIDTH / 2.0..WINDOW_WIDTH / 2.0);
+        let y = rng.random_range(-WINDOW_HEIGHT / 2.0..WINDOW_HEIGHT / 2.0);
+        let size = Vec2::new(rng.random_range(15.0..200.0), rng.random_range(15.0..200.0));
+        let r = rng.random_range(0.0..1.0);
+        let g = rng.random_range(0.0..1.0);
+        let b = rng.random_range(0.0..1.0);
+        commands.spawn((
+            Sprite::from_color(Color::srgb(r, g, b), size),
+            Transform::from_xyz(x, y, 1.0),
+            MySquare {
+                position: Vec2::new(x, y),
+                size,
+                color: Color::srgb(r, g, b),
+            },
+        ));
+    }
+}
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     let player_texture = asset_server.load("textures/player01.png");
 
