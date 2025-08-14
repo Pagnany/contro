@@ -1,5 +1,5 @@
 use crate::player::Player;
-use bevy::prelude::*;
+use bevy::{input::gamepad::GamepadEvent, prelude::*};
 
 pub fn gamepad_system(
     time: Res<Time>,
@@ -32,5 +32,12 @@ pub fn gamepad_system(
             player.velocity.x += left_stick_x * player.move_acceleration * time.delta_secs();
             player.velocity.y += left_stick_y * player.move_acceleration * time.delta_secs();
         }
+    }
+}
+
+/// Show all gamepad input events in the log
+pub fn gamepad_input_events(mut evr_gamepad: EventReader<GamepadEvent>) {
+    for ev in evr_gamepad.read() {
+        info!("Gamepad event: {:?}", ev);
     }
 }
