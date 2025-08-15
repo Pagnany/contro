@@ -51,7 +51,7 @@ fn main() {
         },
     ));
     app.insert_resource(Time::<Fixed>::from_seconds(UPDATE_INTERVAL));
-    app.add_systems(Startup, (setup, spawn_random_squares));
+    app.add_systems(Startup, setup);
     app.add_systems(
         Update,
         (
@@ -59,9 +59,12 @@ fn main() {
             input_gamepad::gamepad_system,
             input_keyboard::keyboard_system,
             player::player_movement_system,
+            input_gamepad::gamepad_reset_mysquare,
+            reset_squares,
         ),
     );
     app.add_systems(FixedUpdate, player::player_mysquare_collision_system);
+    app.add_event::<ResetSquares>();
     app.run();
 }
 
@@ -72,28 +75,46 @@ pub struct MySquare {
     color: Color,
 }
 
-fn spawn_random_squares(mut commands: Commands) {
-    let mut rng = rand::rngs::ThreadRng::default();
-    for _ in 0..20 {
-        let x = rng.random_range(-WINDOW_WIDTH / 2.0..WINDOW_WIDTH / 2.0);
-        let y = rng.random_range(-WINDOW_HEIGHT / 2.0..WINDOW_HEIGHT / 2.0);
-        let size = Vec2::new(rng.random_range(15.0..200.0), rng.random_range(15.0..200.0));
-        let r = rng.random_range(0.0..1.0);
-        let g = rng.random_range(0.0..1.0);
-        let b = rng.random_range(0.0..1.0);
-        commands.spawn((
-            Sprite::from_color(Color::srgb(r, g, b), size),
-            Transform::from_xyz(x, y, 1.0),
-            MySquare {
-                position: Vec2::new(x, y),
-                size,
-                color: Color::srgb(r, g, b),
-            },
-        ));
+#[derive(Event)]
+pub struct ResetSquares;
+
+fn reset_squares(
+    mut commands: Commands,
+    mut ev_spawn: EventReader<ResetSquares>,
+    square_query: Query<(Entity, &MySquare)>,
+) {
+    for _ in ev_spawn.read() {
+        // Despawn all existing squares
+        for (square_entity, _) in square_query.iter() {
+            commands.entity(square_entity).despawn();
+        }
+        // Spawn new squares
+        let mut rng = rand::rngs::ThreadRng::default();
+        for i in 0..20 {
+            let x = rng.random_range(-WINDOW_WIDTH / 2.0..WINDOW_WIDTH / 2.0);
+            let y = rng.random_range(-WINDOW_HEIGHT / 2.0..WINDOW_HEIGHT / 2.0);
+            let size = Vec2::new(rng.random_range(15.0..200.0), rng.random_range(15.0..200.0));
+            let r = rng.random_range(0.4..1.0);
+            let g = rng.random_range(0.4..1.0);
+            let b = rng.random_range(0.4..1.0);
+            commands.spawn((
+                Sprite::from_color(Color::srgb(r, g, b), size),
+                Transform::from_xyz(x, y, 1.0 + i as f32 * 0.01),
+                MySquare {
+                    position: Vec2::new(x, y),
+                    size,
+                    color: Color::srgb(r, g, b),
+                },
+            ));
+        }
     }
 }
 
-fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn setup(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut square_event: EventWriter<ResetSquares>,
+) {
     let player_texture = asset_server.load("textures/player01.png");
 
     commands.spawn(Camera2d);
@@ -103,4 +124,6 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         Transform::from_xyz(100.0, 0.0, 0.0),
         player::Player::default(),
     ));
+
+    square_event.write(ResetSquares);
 }
