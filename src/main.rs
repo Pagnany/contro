@@ -60,10 +60,13 @@ fn main() {
             input_keyboard::keyboard_system,
             player::player_movement_system,
             input_gamepad::gamepad_reset_mysquare,
-            reset_squares,
+            input_keyboard::keyboard_reset_mysquare,
         ),
     );
-    app.add_systems(FixedUpdate, player::player_mysquare_collision_system);
+    app.add_systems(
+        FixedUpdate,
+        (player::player_mysquare_collision_system, reset_squares),
+    );
     app.add_event::<ResetSquares>();
     app.run();
 }

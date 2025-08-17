@@ -1,4 +1,4 @@
-use crate::player::Player;
+use crate::{ResetSquares, player::Player};
 use bevy::prelude::*;
 
 pub fn keyboard_system(
@@ -24,5 +24,14 @@ pub fn keyboard_system(
     if keyboard_input.just_pressed(KeyCode::Space) {
         player.velocity.x += player.dash_power * player.angle.cos();
         player.velocity.y += player.dash_power * player.angle.sin();
+    }
+}
+
+pub fn keyboard_reset_mysquare(
+    mut square_event: EventWriter<ResetSquares>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
+) {
+    if keyboard_input.just_pressed(KeyCode::KeyR) {
+        square_event.write(ResetSquares);
     }
 }
