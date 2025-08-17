@@ -21,23 +21,29 @@ const UPDATE_INTERVAL: f64 = 1.0 / 60.0;
 fn main() {
     let mut app = App::new();
     app.add_plugins((
-        DefaultPlugins.set(WindowPlugin {
-            primary_window: Some(Window {
-                title: WINDOW_TITLE.into(),
-                name: Some(WINDOW_TITLE.into()),
-                resolution: WindowResolution::new(WINDOW_WIDTH, WINDOW_HEIGHT),
-                position: WindowPosition::Centered(MonitorSelection::Primary),
-                resizable: false,
-                enabled_buttons: EnabledButtons {
-                    close: true,
-                    maximize: false,
-                    minimize: false,
-                },
-                window_theme: Some(WindowTheme::Dark),
+        DefaultPlugins
+            .set(WindowPlugin {
+                primary_window: Some(Window {
+                    title: WINDOW_TITLE.into(),
+                    name: Some(WINDOW_TITLE.into()),
+                    resolution: WindowResolution::new(WINDOW_WIDTH, WINDOW_HEIGHT)
+                        .with_scale_factor_override(1.0),
+                    position: WindowPosition::Centered(MonitorSelection::Primary),
+                    resizable: false,
+                    enabled_buttons: EnabledButtons {
+                        close: true,
+                        maximize: false,
+                        minimize: false,
+                    },
+                    window_theme: Some(WindowTheme::Dark),
+                    ..default()
+                }),
+                ..default()
+            })
+            .set(AssetPlugin {
+                meta_check: bevy::asset::AssetMetaCheck::Never,
                 ..default()
             }),
-            ..default()
-        }),
         FpsOverlayPlugin {
             config: FpsOverlayConfig {
                 text_config: TextFont {
