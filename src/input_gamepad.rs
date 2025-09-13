@@ -9,7 +9,12 @@ pub fn gamepad_system(
     let mut player = player_query.single_mut().unwrap();
 
     for gamepad in &gamepads {
-        let right_trigger = gamepad.get(GamepadButton::RightTrigger2).unwrap();
+        // The Controller I own works differently on Windows and Linux
+        // Controller on Windows
+        // let right_trigger = gamepad.get(GamepadButton::RightTrigger2).unwrap();
+        // Gamesir controller on Linux
+        let right_trigger = gamepad.get(GamepadAxis::RightZ).unwrap();
+
         if !player.right_trigger_down && right_trigger > 0.2 {
             player.right_trigger_down = true;
             player.velocity.x += player.dash_power * player.angle.cos();

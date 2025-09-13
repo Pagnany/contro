@@ -69,6 +69,11 @@ pub fn player_mysquare_collision_system(
     square_query: Query<(&MySquare, &Transform, Entity)>,
 ) {
     let (player, player_transform) = player_query.single().unwrap();
+
+    if player.velocity.length() > 1500.0 {
+        return;
+    }
+
     for (square, square_transform, square_entity) in square_query.iter() {
         let half_size = square.size / 2.0;
         let delta_x = player_transform.translation.x - square_transform.translation.x;
@@ -79,7 +84,7 @@ pub fn player_mysquare_collision_system(
         let distance_y = delta_y - closest_y;
         let distance_squared = distance_x.squared() + distance_y.squared();
         if distance_squared < player.radius.squared() {
-            info!("Player collided with square: {:?}", square_entity);
+            // info!("Player collided with square: {:?}", square_entity);
             commands.entity(square_entity).despawn();
         }
     }
