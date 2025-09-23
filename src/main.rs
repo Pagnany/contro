@@ -16,7 +16,7 @@ const WINDOW_TITLE: &str = "contro";
 pub const WINDOW_WIDTH: f32 = 1920.0;
 pub const WINDOW_HEIGHT: f32 = 1080.0;
 
-const UPDATE_INTERVAL: f64 = 1.0 / 60.0;
+const UPDATE_INTERVAL: f64 = 1.0 / 50.0;
 
 fn main() {
     let mut app = App::new();
@@ -78,11 +78,7 @@ fn main() {
 }
 
 #[derive(Component)]
-pub struct MySquare {
-    position: Vec2,
-    size: Vec2,
-    color: Color,
-}
+pub struct MySquare;
 
 #[derive(Event)]
 pub struct ResetSquares;
@@ -109,11 +105,7 @@ fn reset_squares(
             commands.spawn((
                 Sprite::from_color(Color::srgb(r, g, b), size),
                 Transform::from_xyz(x, y, 1.0 + i as f32 * 0.01),
-                MySquare {
-                    position: Vec2::new(x, y),
-                    size,
-                    color: Color::srgb(r, g, b),
-                },
+                MySquare,
             ));
         }
     }
@@ -130,7 +122,6 @@ fn setup(
 
     commands.spawn((
         Sprite::from_image(player_texture),
-        Transform::from_xyz(100.0, 0.0, 0.0),
         player::Player::default(),
     ));
 

@@ -5,7 +5,6 @@ use crate::MySquare;
 #[derive(Component)]
 pub struct Player {
     pub radius: f32,
-    pub position: Vec2,
     pub velocity: Vec2,
     /// Angle in radians
     pub angle: f32,
@@ -20,7 +19,6 @@ impl Default for Player {
     fn default() -> Self {
         Player {
             radius: 15.0,
-            position: Vec2::ZERO,
             velocity: Vec2::ZERO,
             angle: 0.0,
             move_acceleration: 15000.0,
@@ -66,7 +64,7 @@ pub fn player_movement_system(time: Res<Time>, mut query: Query<(&mut Player, &m
 pub fn player_mysquare_collision_system(
     mut commands: Commands,
     player_query: Query<(&Player, &Transform)>,
-    square_query: Query<(&MySquare, &Transform, Entity)>,
+    square_query: Query<(&Transform, &Sprite, Entity), With<MySquare>>,
 ) {
     let (player, player_transform) = player_query.single().unwrap();
 
@@ -74,8 +72,8 @@ pub fn player_mysquare_collision_system(
         return;
     }
 
-    for (square, square_transform, square_entity) in square_query.iter() {
-        let half_size = square.size / 2.0;
+    for (square_transform, sprite, square_entity) in square_query.iter() {
+        let half_size = sprite.custom_size.unwrap() / 2.0;
         let delta_x = player_transform.translation.x - square_transform.translation.x;
         let delta_y = player_transform.translation.y - square_transform.translation.y;
         let closest_x = delta_x.clamp(-half_size.x, half_size.x);
