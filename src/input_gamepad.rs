@@ -14,7 +14,6 @@ pub fn gamepad_system(
         // let right_trigger = gamepad.get(GamepadButton::RightTrigger2).unwrap();
         // Gamesir controller on Linux
         let right_trigger = gamepad.get(GamepadAxis::RightZ).unwrap();
-
         if !player.right_trigger_down && right_trigger > 0.2 {
             player.right_trigger_down = true;
             player.velocity.x += player.dash_power * player.angle.cos();
@@ -28,6 +27,55 @@ pub fn gamepad_system(
         if left_stick_x.abs() > 0.1 || left_stick_y.abs() > 0.1 {
             player.velocity.x += left_stick_x * player.move_acceleration * time.delta_secs();
             player.velocity.y += left_stick_y * player.move_acceleration * time.delta_secs();
+        }
+    }
+}
+
+pub fn gamepad_braking_system(
+    time: Res<Time>,
+    gamepads: Query<&Gamepad>,
+    mut player_query: Query<&mut Player>,
+) {
+    let mut player = player_query.single_mut().unwrap();
+
+    for gamepad in &gamepads {
+        // Left trigger for braking
+        // Windows
+        // let left_trigger = gamepad.get(GamepadButton::LeftTrigger2).unwrap();
+        // Gamesir controller on Linux
+        let left_trigger = gamepad.get(GamepadAxis::LeftZ).unwrap() + 1.0;
+
+        if !player.init_left_trigger_down && left_trigger == 1.0 {
+            return;
+        } else {
+            player.init_left_trigger_down = true;
+        }
+
+        if left_trigger > 0.2 {
+            if player.velocity.x > 0.01 {
+                player.velocity.x -= player.breaking_power * 1.0 * left_trigger * time.delta_secs();
+                if player.velocity.x < 0.0 {
+                    player.velocity.x = 0.0;
+                }
+            } else if player.velocity.x < -0.01 {
+                player.velocity.x -=
+                    player.breaking_power * -1.0 * left_trigger * time.delta_secs();
+                if player.velocity.x > 0.0 {
+                    player.velocity.x = 0.0;
+                }
+            }
+            if player.velocity.y > 0.01 {
+                player.velocity.y -= player.breaking_power * 1.0 * left_trigger * time.delta_secs();
+                if player.velocity.y < 0.0 {
+                    player.velocity.y = 0.0;
+                }
+            } else if player.velocity.y < -0.01 {
+                player.velocity.y -=
+                    player.breaking_power * -1.0 * left_trigger * time.delta_secs();
+                if player.velocity.y > 0.0 {
+                    player.velocity.y = 0.0;
+                }
+            }
         }
     }
 }

@@ -11,8 +11,9 @@ pub struct Player {
     pub move_acceleration: f32,
     pub dash_power: f32,
     pub friction: f32,
+    pub breaking_power: f32,
     pub right_trigger_down: bool,
-    pub left_trigger_down: bool,
+    pub init_left_trigger_down: bool,
 }
 
 impl Default for Player {
@@ -24,8 +25,9 @@ impl Default for Player {
             move_acceleration: 15000.0,
             dash_power: 5000.0,
             friction: 15.0,
+            breaking_power: 10000.0,
             right_trigger_down: false,
-            left_trigger_down: false,
+            init_left_trigger_down: false,
         }
     }
 }

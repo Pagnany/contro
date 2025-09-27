@@ -66,6 +66,7 @@ fn main() {
             input_keyboard::keyboard_system,
             player::player_movement_system,
             input_gamepad::gamepad_reset_mysquare,
+            input_gamepad::gamepad_braking_system,
             input_keyboard::keyboard_reset_mysquare,
         ),
     );
@@ -75,6 +76,23 @@ fn main() {
     );
     app.add_event::<ResetSquares>();
     app.run();
+}
+
+fn setup(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut square_event: EventWriter<ResetSquares>,
+) {
+    let player_texture = asset_server.load("textures/player01.png");
+
+    commands.spawn(Camera2d);
+
+    commands.spawn((
+        Sprite::from_image(player_texture),
+        player::Player::default(),
+    ));
+
+    square_event.write(ResetSquares);
 }
 
 #[derive(Component)]
@@ -109,21 +127,4 @@ fn reset_squares(
             ));
         }
     }
-}
-
-fn setup(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    mut square_event: EventWriter<ResetSquares>,
-) {
-    let player_texture = asset_server.load("textures/player01.png");
-
-    commands.spawn(Camera2d);
-
-    commands.spawn((
-        Sprite::from_image(player_texture),
-        player::Player::default(),
-    ));
-
-    square_event.write(ResetSquares);
 }
