@@ -11,9 +11,9 @@ pub fn gamepad_system(
     for gamepad in &gamepads {
         // The Controller I own works differently on Windows and Linux
         // Controller on Windows
-        // let right_trigger = gamepad.get(GamepadButton::RightTrigger2).unwrap();
+        let right_trigger = gamepad.get(GamepadButton::RightTrigger2).unwrap();
         // Gamesir controller on Linux
-        let right_trigger = gamepad.get(GamepadAxis::RightZ).unwrap();
+        // let right_trigger = gamepad.get(GamepadAxis::RightZ).unwrap();
         if !player.right_trigger_down && right_trigger > 0.2 {
             player.right_trigger_down = true;
             player.velocity.x += player.dash_power * player.angle.cos();
@@ -41,9 +41,9 @@ pub fn gamepad_braking_system(
     for gamepad in &gamepads {
         // Left trigger for braking
         // Windows
-        // let left_trigger = gamepad.get(GamepadButton::LeftTrigger2).unwrap();
+        let left_trigger = gamepad.get(GamepadButton::LeftTrigger2).unwrap();
         // Gamesir controller on Linux
-        let left_trigger = gamepad.get(GamepadAxis::LeftZ).unwrap() + 1.0;
+        // let left_trigger = gamepad.get(GamepadAxis::LeftZ).unwrap() + 1.0;
 
         if !player.init_left_trigger_down && left_trigger == 1.0 {
             return;
@@ -52,28 +52,23 @@ pub fn gamepad_braking_system(
         }
 
         if left_trigger > 0.2 {
-            if player.velocity.x > 0.01 {
-                player.velocity.x -= player.breaking_power * 1.0 * left_trigger * time.delta_secs();
-                if player.velocity.x < 0.0 {
-                    player.velocity.x = 0.0;
-                }
-            } else if player.velocity.x < -0.01 {
-                player.velocity.x -=
-                    player.breaking_power * -1.0 * left_trigger * time.delta_secs();
-                if player.velocity.x > 0.0 {
-                    player.velocity.x = 0.0;
-                }
-            }
-            if player.velocity.y > 0.01 {
-                player.velocity.y -= player.breaking_power * 1.0 * left_trigger * time.delta_secs();
-                if player.velocity.y < 0.0 {
-                    player.velocity.y = 0.0;
-                }
-            } else if player.velocity.y < -0.01 {
-                player.velocity.y -=
-                    player.breaking_power * -1.0 * left_trigger * time.delta_secs();
-                if player.velocity.y > 0.0 {
-                    player.velocity.y = 0.0;
+            // Get velocity magnitude and direction
+            let velocity_length = player.velocity.length();
+
+            if velocity_length > 0.01 {
+                // Calculate braking magnitude
+                let braking_magnitude = player.breaking_power * left_trigger * time.delta_secs();
+
+                // Check if we should stop completely
+                if braking_magnitude >= velocity_length {
+                    // Set velocity to zero if braking would reverse direction
+                    player.velocity = Vec2::ZERO;
+                } else {
+                    // direction is opposite to velocity
+                    let direction = -player.velocity.normalize();
+
+                    // Apply braking force in the correct direction
+                    player.velocity += direction * braking_magnitude;
                 }
             }
         }

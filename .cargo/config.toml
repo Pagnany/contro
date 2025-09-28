@@ -17,4 +17,4 @@ rustflags = ['--cfg', 'getrandom_backend="wasm_js"']
 
 [env]
 # for my Windows PC
-# WGPU_BACKEND = "dx12"
+WGPU_BACKEND = "dx12"
